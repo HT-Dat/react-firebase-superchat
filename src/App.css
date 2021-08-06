@@ -123,12 +123,13 @@ p {
   border-radius: 25px;
   position: relative;
   color: white;
-  text-align: center;
+  text-align: start;
 }
 
 .message {
   display: flex;
   align-items: center;
+  
 }
 
 
