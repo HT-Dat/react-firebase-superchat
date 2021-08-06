@@ -4,6 +4,7 @@ import "firebase/firestore";
 import "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import { useState, useRef } from "react";
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp({
@@ -41,28 +42,59 @@ function App() {
     );
   }
   function ChatMessage(props) {
-    const { text, uid } = props.message;
-
-    return <p>{text}</p>;
+    const { text, uid, photoURL } = props.message;
+    const messageClass = uid === auth.currentUser.uid ? "sent" : "received";
+    return (
+      <div className={`message ${messageClass}`}>
+        <img src={photoURL} />
+        <p>{text}</p>
+      </div>
+    );
   }
   function ChatRoom() {
     const messagesRef = firestore.collection("messages");
-
+    const dummy = useRef();
     const query = messagesRef.orderBy("createdAt").limit(25);
     const [messages] = useCollectionData(query, {
       idField: "id",
     });
+    const [formValue, setFormValue] = useState("");
+    const sendMessage = async (e) => {
+      setFormValue('');
+      e.preventDefault();
+      const { uid, photoURL } = auth.currentUser;
+      await messagesRef.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid,
+        photoURL,
+      });
+      dummy.current.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+    };
     return (
-      <>
-        <SignOut />
-        {messages &&
-          messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-      </>
+      <div>
+        <main>
+          {messages &&
+            messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
+            <div ref={dummy} ></div>
+        </main>
+        <form onSubmit={sendMessage} className>
+          <input
+            value={formValue}
+            onChange={(e) => {
+              setFormValue(e.target.value);
+            }}
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
     );
   }
   return (
     <div className="App">
-      <header className="App-header"></header>
+      <header className="App-header">
+        <SignOut />
+      </header>
 
       <section>{user ? <ChatRoom /> : <SignIn />}</section>
     </div>
