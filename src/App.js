@@ -4,16 +4,18 @@ import "firebase/firestore";
 import "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-firebase.initializeApp({
-  apiKey: "AIzaSyA3_E6iLr8A4JFDjvcVSzASttnWLisa36w",
-  authDomain: "superchat-53299.firebaseapp.com",
-  projectId: "superchat-53299",
-  storageBucket: "superchat-53299.appspot.com",
-  messagingSenderId: "951331474775",
-  appId: "1:951331474775:web:d316dd40a329a5e2c54212",
-  measurementId: "G-VEZJEB6ZN4",
-  databaseURL: "https://superchat-53299.firebaseio.com",
-});
+
+if (firebase.apps.length === 0) {
+  firebase.initializeApp({
+    apiKey: "AIzaSyA3_E6iLr8A4JFDjvcVSzASttnWLisa36w",
+    authDomain: "superchat-53299.firebaseapp.com",
+    projectId: "superchat-53299",
+    storageBucket: "superchat-53299.appspot.com",
+    messagingSenderId: "951331474775",
+    appId: "1:951331474775:web:bfec4aaaeccf83b1c54212",
+    measurementId: "G-P8CSG35XBB",
+  });
+}
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 function App() {
@@ -40,12 +42,16 @@ function App() {
   }
   function ChatMessage(props) {
     const { text, uid } = props.message;
+
     return <p>{text}</p>;
   }
   function ChatRoom() {
     const messagesRef = firestore.collection("messages");
+
     const query = messagesRef.orderBy("createdAt").limit(25);
-    const [messages] = useCollectionData(query, { idField: "id" });
+    const [messages] = useCollectionData(query, {
+      idField: "id",
+    });
     return (
       <>
         <SignOut />
