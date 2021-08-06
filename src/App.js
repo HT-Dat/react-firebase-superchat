@@ -4,7 +4,7 @@ import "firebase/firestore";
 import "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp({
@@ -60,7 +60,7 @@ function App() {
     });
     const [formValue, setFormValue] = useState("");
     const sendMessage = async (e) => {
-      setFormValue('');
+      setFormValue("");
       e.preventDefault();
       const { uid, photoURL } = auth.currentUser;
       await messagesRef.add({
@@ -69,14 +69,16 @@ function App() {
         uid,
         photoURL,
       });
-      dummy.current.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
     };
+    useEffect(() => {
+      dummy.current.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
     return (
       <div>
         <main>
           {messages &&
             messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-            <div ref={dummy} ></div>
+          <div ref={dummy}></div>
         </main>
         <form onSubmit={sendMessage} className>
           <input
