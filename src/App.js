@@ -54,7 +54,7 @@ function App() {
   function ChatRoom() {
     const messagesRef = firestore.collection("messages");
     const dummy = useRef();
-    const query = messagesRef.orderBy('createdAt').limitToLast(25);
+    const query = messagesRef.orderBy("createdAt").limitToLast(25);
     const [messages] = useCollectionData(query, {
       idField: "id",
     });
@@ -62,13 +62,18 @@ function App() {
     const sendMessage = async (e) => {
       setFormValue("");
       e.preventDefault();
-      const { uid, photoURL } = auth.currentUser;
-      await messagesRef.add({
-        text: formValue,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        uid,
-        photoURL,
-      });
+      if (
+        formValue.trim().length > 0 &&
+        formValue.includes("ก") == false
+      ) {
+        const { uid, photoURL } = auth.currentUser;
+        await messagesRef.add({
+          text: formValue,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          uid,
+          photoURL,
+        });
+      }
     };
     useEffect(() => {
       dummy.current.scrollIntoView({ behavior: "smooth" });
