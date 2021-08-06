@@ -87,7 +87,9 @@ function App() {
               setFormValue(e.target.value);
             }}
           />
-          <button type="submit">Send</button>
+          <button type="submit" disabled={!formValue}>
+            Send
+          </button>
         </form>
       </div>
     );
@@ -95,9 +97,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <h1>⚛️🔥💬</h1>
         <SignOut />
       </header>
-
       <section>{user ? <ChatRoom /> : <SignIn />}</section>
     </div>
   );
